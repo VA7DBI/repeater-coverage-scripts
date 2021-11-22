@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 
 createdb $1 -O $2
 

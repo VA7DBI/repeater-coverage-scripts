@@ -141,3 +141,22 @@ INSERT INTO transmitters(callsign,geom,band)
   FROM ocarc o, band b 
   WHERE (o.field_base_frequency || 'MHz')::unit BETWEEN b.low AND b.high;
 
+CREATE TABLE public.coverages (
+    rid integer NOT NULL,
+    rast public.raster,
+    filename text
+);
+
+CREATE SEQUENCE public.coverages_rid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+ALTER SEQUENCE public.coverages_rid_seq OWNED BY public.coverages.rid;
+
+ALTER TABLE ONLY public.coverages
+    ADD CONSTRAINT coverages_pkey PRIMARY KEY (rid);
+
+CREATE INDEX coverages_st_convexhull_idx ON public.coverages USING gist (public.st_convexhull(rast));
