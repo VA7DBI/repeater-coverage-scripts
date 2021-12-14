@@ -136,10 +136,12 @@ INSERT INTO transmitters(callsign,geom,band)
   SELECT
     o.field_callsign,
     ST_SetSRID(ST_MakePoint(o.field_lat_long[0],o.field_lat_long[1],
-      COALESCE(CASE WHEN o.field_elevation <> '' THEN o.field_elevation ELSE NULL END,'0')::float),4326)
+      COALESCE(CASE WHEN o.field_elevation <> '' THEN o.field_elevation ELSE NULL END,'0')::float),4326),
     b.id
-  FROM ocarc o, band b 
-  WHERE (o.field_base_frequency || 'MHz')::unit BETWEEN b.low AND b.high;
+  FROM ocarc o, band b
+  WHERE (o.field_base_frequency || 'MHz')::unit BETWEEN b.low AND b.high 
+    AND o.field_lat_long[1] <> 0 AND o.field_lat_long[0] <> 0 
+   AND o.field_callsign NOT IN (SELECT callsign FROM transmitters);
 
 CREATE TABLE public.coverages (
     rid integer NOT NULL,
